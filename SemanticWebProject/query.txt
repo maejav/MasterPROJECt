@@ -1,0 +1,672 @@
+query1
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX em: <http://www.semanticweb.org/tagh/ontologies/imdb#>
+SELECT count(distinct(?movie)) 
+	WHERE {
+	?movie em:has_actor ?actor1
+	?movie em:has_actor ?actor2 .
+	
+	
+	}
+	group by ?actor1,?actor2
+	
+
+
+
+
+query2
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX em: <http://www.semanticweb.org/tagh/ontologies/imdb#>
+SELECT  ?act1_name ?act2_name 
+	WHERE {
+	?movie em:has_actor ?actor1 .
+	?movie em:has_actor ?actor2 .
+	?actor1 em:name ?act1_name .
+	?actor2 em:name ?act2_name .
+	}
+	group by ?actor1,?actor2
+	having count(distinct(?movie))>3
+
+
+
+
+
+
+
+query3
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX em: <http://www.semanticweb.org/tagh/ontologies/imdb#>
+SELECT ?act_name 
+	WHERE {
+	?movie em:has_actor ?actor .
+	?movie em:rate  ?rate .
+        ?actor em:name ?act_name.
+    FILTER{?rate > 8}
+    FILTER{count(distinct(?movie))>=3}	
+	}
+
+
+
+query4
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX em: <http://www.semanticweb.org/tagh/ontologies/imdb#>
+SELECT ?name  ?gr 
+	WHERE {
+	?movie rdfs:SubClassOf owl:Film .
+        ?movie em:name ?name .
+	?movie em:has_genre ?gr .
+	?movie em:rate ?rate  .
+	
+	}
+	group by ?gr 
+	order by DESC(?rate)
+        having max(?rate)	
+      
+	
+
+
+
+query5
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX em: <http://www.semanticweb.org/tagh/ontologies/imdb#>
+SELECT ?name_count
+	WHERE {
+	?movie rdfs:SubClassOf owl:Film .
+	?movie em:made_in ?country .
+        ?country em:name ?name_count.
+	FILTER {count(distinct(?movie))<=2}
+	}
+	
+	
+	
+	
+
+
+query6
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX em: <http://www.semanticweb.org/tagh/ontologies/imdb#>
+SELECT ?name_count
+	WHERE {
+	?movie rdfs:SubClassOf owl:Film .
+        ?country em:name ?name_count.
+	?movie made_in ?country .
+	FILTER {count(distinct(?movie))>30}
+	}
+
+
+
+
+
+
+query7
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX em: <http://www.semanticweb.org/tagh/ontologies/imdb#>
+SELECT ?name
+	WHERE {
+	?movie rdfs:SubClassOf owl:Film .
+	?movie em:has_language ?lan.
+	?lan em:name ?name.
+	}
+	group by ?lan 
+	order by DESC(count(distinct(?movie)))
+	limit 3
+	
+
+
+
+
+query8
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX em: <http://www.semanticweb.org/tagh/ontologies/imdb#>
+SELECT count(distinct(?movie))as ?movi
+	WHERE {
+	?movie rdfs:SubClassOf owl:Film .
+	?movie em:has_genre ?gr .
+	?movie em:has_language ?lan 
+        ?lan   em:name "french"^^xsd:string.
+     	
+	
+	}
+	group by ?gr 
+	
+	
+	
+	
+ 
+
+query9
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX em: <http://www.semanticweb.org/tagh/ontologies/imdb#>
+SELECT ?genre count(?movie)
+	WHERE {
+	?movie rdfs:SubClassOf owl:Film .
+	?movie em:has_genre ?genre.
+	?movie em:has_language ?lan .
+	NOT EXISTS {?lan   em:name "french"^^xsd:string}
+	}
+	group by ?genre
+	order DESC(by count(?movie))
+	
+
+
+
+
+query10
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX em: <http://www.semanticweb.org/tagh/ontologies/imdb#>
+SELECT ?ti
+	WHERE {
+	?movie rdfs:SubClassOf owl:Film .
+	?movie em:title ?ti.
+	?movie em:has_writer ?writer.	
+	?movie em:has_actor ?writer.
+
+
+}
+
+
+
+
+
+query11
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX em: <http://www.semanticweb.org/tagh/ontologies/imdb#>
+SELECT ?writer 
+	WHERE {
+	?movie rdfs:SubClassOf owl:Film .
+	?movie em:has_genre ?gr.
+	?gr em:name "Horror"^^xsd:string.
+	?movie em:rate ?rate.
+	?movie m:has_writer ?writer.
+	
+	}
+	group by ?writer
+	order by DESC(avg(?rate))
+	limit 1
+	
+	
+query12
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX em: <http://www.semanticweb.org/tagh/ontologies/imdb#>
+SELECT ?director_name 
+	WHERE {	
+	?movie rdfs:SubClassOf owl:Film .
+	?movie em:has_genre ?gr.
+	?movie em:has_director ?director.
+        ?director em:name ?director_name.
+	FILTER {count(distinct(?gr))>=3)
+	}
+	
+     
+
+
+
+
+
+
+query13
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX em: <http://www.semanticweb.org/tagh/ontologies/imdb#>
+SELECT ?actor_name 
+	WHERE {
+	?movie em:has_actor ?actor .
+        ?actor em:name ?actor_name.
+	?movie em:made_in ?city1
+	?actor born_in ?city2 
+	FILTER {!sameTerm(?city1,city2)}
+
+}/////فرض را بر این گرفتیم که اگر فیلمی در یک کشور دیگر غیر از زادگاهش بازی کرده به معنای آن است که مهاجرت کرده است 
+
+
+
+
+
+query14
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX em: <http://www.semanticweb.org/tagh/ontologies/imdb#>
+SELECT ?actor_name  
+	WHERE {
+	?movie em:has_actor ?actor .
+        ?actor em:name ?actor_name.
+	?movie em:has_genre ?gr .
+	FILTER {count(distinct(?gr)==1}
+	}
+	
+
+query15
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX em: <http://www.semanticweb.org/tagh/ontologies/imdb#>
+SELECT ?w_name  
+	WHERE {
+	?movie em:has_writer ?writer .
+        ?writer em:name ?w_name.
+	?movie em:has_genre ?gr .
+	?movie em:rate ?rate .
+	
+	
+	}
+	group by ?gr
+	order by ?rate 
+	having max(?rate)
+
+
+
+	
+query16
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX em: <http://www.semanticweb.org/tagh/ontologies/imdb#>
+SELECT ?name_country 
+	WHERE {	
+	?movie em:has_director ?director .
+	?director em:death_place ?city .
+	?city em:name ?name_country.
+	}
+	group by ?city 
+	order by DESC(count(distinct(?director)))
+	limit 1 
+	
+	
+	
+
+
+	
+query17
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX em: <http://www.semanticweb.org/tagh/ontologies/imdb#> 
+	SELECT ?city_name 
+	WHERE {
+	?movie em:has_writer ?writer .
+	?movie em:has_genre ?gr .
+	?movie em:rate ?rate .
+	?gr em:name "Horror"^^xsd:string.
+	?writer em:born_in ?city.
+	?city em:name ?city_name.
+	
+	
+	}
+	group by ?writer
+	order by DESC(avg(?rate))
+	
+	
+	
+	
+query18
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX em: <http://www.semanticweb.org/tagh/ontologies/imdb#> 
+	SELECT ?dir
+	WHERE {	
+	?movie em:has_director ?director.
+        ?director em:name ?dir.
+	?movie made_in ?city1 .
+	?director em:born_in ?city1 .
+	NOT EXISTS {
+	?movie2 em:made_in city2.
+	movie2 em:has_director ?director.
+	FILTER{!sameTerm(city1,city2)}
+	}
+	}
+	
+
+
+query19
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX em: <http://www.semanticweb.org/tagh/ontologies/imdb#> 
+	SELECT ?dir
+	WHERE {	
+	?movie1 em:has_director ?director.
+        ?director em:name ?dir.
+	?movie1 em:has_actor ?actor .
+	NOT EXIST {
+	
+	?movie2 em:has_director ?director.
+	
+	NOT EXIST {
+	
+	?movie2 em:has_actor ?actor .
+	}
+	}
+	}
+
+
+
+
+query20
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX em: <http://www.semanticweb.org/tagh/ontologies/imdb#> 
+	SELECT ?wr 
+	WHERE {
+	?movie1 em:has_writer ?writer .
+	?movie1 em:has_genre ?gr1 .
+	?gr1 em:name "Horror"^^xsd:string.
+	?movie2 e:has_writer ?writer
+	?movie2 em:has_genre ?gr2.
+	?gr2 em:name "Drama"^^xsd:string.
+        ?writer em:name ?wr.
+	
+	}///کلمه ی فقط استفاده نشده است 
+	
+	
+
+query21
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX em: <http://www.semanticweb.org/tagh/ontologies/imdb#> 
+	SELECT ?act
+	WHERE {
+	?movie1 em:has_director ?actor.
+	?movie2 em:has_writer ?actor .
+	?movie3 em:has_actor ?actor.
+        ?actor em:name ?act.
+	}
+	
+	
+
+
+
+query22
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX em: <http://www.semanticweb.org/tagh/ontologies/imdb#> 
+	SELECT ?city _name
+	WHERE {
+	?movie em:has_actor ?actor.
+	?movie em:made_in ?city .
+	?city em:name ?city_name.
+	?actor born_in ?city1.
+	FILTER{!sameTerm(city1,city)
+	}
+//فرض را بر این گرفتیم که اگر یازیگری فیلمی در غیر از وطن خویش بازی کرده به معنای مهاجرت وی خواهد بود 
+
+
+
+
+query23
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX em: <http://www.semanticweb.org/tagh/ontologies/imdb#> 
+	SELECT ?obj
+	WHERE {
+	?movie ?predicat ?object .
+        ?object em:name ?obj.
+	?object em:has_job ?job1 .
+	?movie em:has_genre ?gr .
+	?gr em:name "Drama"^^xsd:string.
+	?movie em:rate ?r.
+	FILTER{?r>8}
+	NOT EXIST {
+	?movie em:has_director ?object.
+	?movie em:has_writer ?object.
+	?movie em:has_actor ?object .
+	}
+}
+
+	
+	
+	
+	
+	
+	
+
+query24
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX em: <http://www.semanticweb.org/tagh/ontologies/imdb#>
+SELECT ?dir
+	WHERE { 
+            ?movie em:has_director ?director .
+            ?director em:name ?dir.
+            ?movie em:rate ?rate.
+            FILTER{?rate>8}
+            ?director cause_of_death "Cancer"^^xsd:string.			 }
+   
+   
+   
+query25   
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#
+PREFIX em: <http://www.semanticweb.org/tagh/ontologies/imdb#>
+SELECT ?act
+	WHERE    {
+	?movie em:has_actor ?actor.
+        ?actor em:name ?act.
+	?movie em:rate ?rate.
+	FILTER{count(distinct(?movie))==1}
+	FILTER{ ?rate >8 }
+}	
+
+
+
+query26  
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX em: <http://www.semanticweb.org/tagh/ontologies/imdb#>
+SELECT ?co
+	WHERE    {
+	?movie em:has_actor ?actor.
+	?movie em:rate ?rate.
+	?actor em:born_in  ?count.
+	?count em:name ?co.
+	FILTER{count(distinct(?movie))==1}
+	FILTER{ ?rate >8 }
+	
+	}
+	
+
+
+	
+	
+query27
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX em: <http://www.semanticweb.org/tagh/ontologies/imdb#>
+SELECT ?act  
+	WHERE {
+	?movie em:has_actor ?actor .
+        ?actor em:name ?act.
+	?movie em:rate  ?rate.
+        ?actor em:birth_date ?date.
+    FILTER regex{?date , "February"  }	
+    FILTER{?rate > 8}
+    FILTER{count(distinct(?movie))>=3}	
+	}
+
+
+
+
+query28
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX em: <http://www.semanticweb.org/tagh/ontologies/imdb#>
+SELECT ?act
+	WHERE {	
+	?moive em:has_actor ?actor .
+	?movie  em:awards ?discription.
+        ?actor em:name ?act.
+	FILTER regex {?description ,"oskar"}
+	
+	}
+	
+	
+	
+query29
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX em: <http://www.semanticweb.org/tagh/ontologies/imdb#>
+SELECT ?ti 
+	WHERE {		
+           ?movie em:realese_date ?date.
+           ?movie em:title ?ti.
+           ?movie em:awards ?discription.
+           ?movie em:rate ?rate.
+           FILTER regex{?discription ,"nominated"}
+	   FILTER{?rate >8}
+	   FILTER regex {?date,"1997"}
+				
+				
+				}
+				
+query30
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX em: <http://www.semanticweb.org/tagh/ontologies/imdb#>
+SELECT ?dir
+	WHERE {	?movie em:has_genre ?gr.
+	        ?movie em:has_director ?director .
+	        ?movie em:rate     ?rate .
+                ?director em:name ?dir.
+		
+			 
+			 }
+			 group by ?gr
+                         order by DESC(avg(?rate)) 
+                         limit 1
+	
+
+query31
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX em: <http://www.semanticweb.org/tagh/ontologies/imdb#>
+SELECT avg(?rate)
+	WHERE {
+	?movie em:has_genre   ?gr .
+        ?movie em:rate ?rate.
+	?gr em:name "action"^^xsd:string .
+	?movie em:made_in ?country .
+	?country em:name "America"^^xsd:string.
+	union 
+	?movie em:has_genre   ?gr .
+        ?movie em:rate ?rate.
+	?gr em:name "action"^^xsd:string .
+	?movie em:made_in ?country .
+	?country em:name "united state"^^xsd:string.
+	
+	}
+	
+	
+query32
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX em: <http://www.semanticweb.org/tagh/ontologies/imdb#>
+SELECT ?actor
+	WHERE {	
+	?movie em:made_in ?city1.
+	?city1 em:name "America"^^xsd:string.
+	?movie em:has_actor ?actor .
+	?actor em:born_in  ?city2.
+	?city2 em:name "France".
+	?movie em:awards ?description.
+	FILTER regex{ ?description,"oskar"  }
+        union
+        ?movie em:made_in ?city1.
+	?city1  em:name "united state"^^xsd:string.
+	?movie em:has_actor ?actor .
+	?actor em:born_in  ?city2.
+	?city2 em:name "France".
+	?movie em:awards ?description.
+	FILTER regex{ ?description,"oskar"  }
+	}
+	
+	
+query33
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX em: <http://www.semanticweb.org/tagh/ontologies/imdb#>
+SELECT ?ti
+	WHERE {
+	
+	?moive rdfs:SubClassOf owl:series. 
+        ?movie em:title ?ti.
+        ?movie em:release_date ?date .
+        FILTER regex{?date,"2015"}	
+	?movie em:rate ?rate.
+	FILTER {?rate >8}
+	
+	}
+	
+
